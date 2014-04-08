@@ -20,7 +20,7 @@ type Player struct{
 	lost bool
 }
 
-func (p *Player) Init(aiName string, playerNumber int) {
+func (p *Player) Init(aiName string, playerNumber, nPlayers, startPlayer int) {
 	//end any existing AI
 	if p != nil {
 		p.Forfeit()
@@ -37,7 +37,6 @@ func (p *Player) Init(aiName string, playerNumber int) {
 		//the player is human
 		p.toPipe = os.Stdout
 		p.fromPipe = os.Stdin
-		p.name = "human"
 	} else {
 		p.ai = exec.Command(aiName)
 		
@@ -53,15 +52,16 @@ func (p *Player) Init(aiName string, playerNumber int) {
 			p.fromPipe = pipe
 		}
 		
-		p.name = aiName
-		
 		if err := p.ai.Start(); err != nil {
 			panic(err)
 		}
 	}
 	
 	p.number = playerNumber
-	fmt.Fprintln(p.toPipe, p.number)
+	p.Send("ident", p.number)
+	p.name = p.Recieve()
+	p.Send("players", nPlayers)
+	p.Send("start", startPlayer)
 }
 
 func (p *Player) Forfeit() {
@@ -87,12 +87,21 @@ func (p *Player) Send(args ...interface{}) {
 	}
 }
 
-func (p *Player) Recieve(args ...interface{}) {
+func (p *Player) Recieve() string {
 	if p.lost {
 		panic("Nonexistent AI")
 	}
-	_, err := fmt.Fscan(p.fromPipe, args...)
-	if err != nil {
-		panic(err)
+	
+	buf := make([]byte, 1)
+	str := make([]byte, 0, 20)
+	n, err := p.fromPipe.Read(buf)
+	for ; buf[0] != '\n'; n, err = p.fromPipe.Read(buf) {
+		if err == nil && n > 0 {
+			str = append(str, buf[0])
+		} else if err != io.EOF {
+			panic(err)
+		}
 	}
+	
+	return string(str)
 }

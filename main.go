@@ -4,21 +4,18 @@ import "math/rand"
 import "time"
 import "os"
 
-var players [4]*Player
+var players []*Player
 
 func main() {
 	rand.Seed(time.Now().Unix())
 
-	n := len(os.Args)
-	if n != 5 {
-		panic("Not enough arguments")
-	}
-	
+	players = make([]*Player, len(os.Args)-1)
+	var startPlayer = 0
 	
 
 	for i, _ := range players {
 		players[i] = new(Player)
-		players[i].Init(os.Args[i+1], i)
+		players[i].Init(os.Args[i+1], i, len(players), startPlayer)
 	}
 
 	deck := new(Deck)
