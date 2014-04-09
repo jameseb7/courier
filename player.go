@@ -10,7 +10,7 @@ type Player struct{
 	number int
 
 	hand []Card
-	
+
 	ai *exec.Cmd
 	toPipe io.WriteCloser
 	fromPipe io.ReadCloser
@@ -18,6 +18,8 @@ type Player struct{
 	ministered bool
 	protected bool
 	lost bool
+
+	roundsWon int
 }
 
 func (p *Player) Init(aiName string, playerNumber, nPlayers, startPlayer int) {
@@ -104,4 +106,40 @@ func (p *Player) Recieve() string {
 	}
 	
 	return string(str)
+}
+
+func (p *Player) AddToHand(c Card) {
+	p.hand = append(p.hand, c)
+}
+
+func (p *Player) RemoveFromHand(c Card) (ok bool) {
+	for i, v := range p.hand {
+		if v == c {
+			p.hand = append(p.hand[:i], p.hand[i+1:]...)
+			return true
+		}
+	}
+	return false
+}
+
+func (p *Player) HandString() string {
+	str := make([]byte, 0, 20)
+	for i, v := range p.hand {
+		if i != 0 {
+			str = append(str, ' ')
+		}
+		str = append(str, []byte(v.String())...)
+	}
+	return string(str)
+}
+
+func (p *Player) HandValue() int {
+	if p.lost {
+		return 0
+	}
+	value := 0
+	for _, c := range p.hand {
+		value += int(c)
+	}
+	return value
 }
