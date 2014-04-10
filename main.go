@@ -2,16 +2,20 @@ package main
 
 import "math/rand"
 import "time"
-import "os"
 import "fmt"
 import "strings"
+import "flag"
 
 var players []*Player
+var debug bool
 
 func main() {
 	rand.Seed(time.Now().Unix())
+	
+	flag.BoolVar(&debug, "v", false, "Provide more verbose output for debugging purposes")
+	flag.Parse()
 
-	players = make([]*Player, len(os.Args)-1)
+	players = make([]*Player, flag.NArg())
 	var startPlayer = 0
 	
 	var deck = new(Deck)
@@ -23,8 +27,14 @@ func main() {
 	for won, _ := PlayerWon(); !won; {
 		deck.Init()
 		for i, _ := range players {
-			players[i].Init(os.Args[i+1], i, len(players), startPlayer)
-			players[i].Send("draw", deck.Draw())
+			players[i].Init(flag.Arg(i), i, len(players), startPlayer)
+			cardDrawn := deck.Draw()
+			players[i].Send("draw", cardDrawn)
+			players[i].AddToHand(cardDrawn)
+			if debug {
+				fmt.Println("*** Player", i, "drew", cardDrawn, "***")
+				fmt.Println("*** Player", i, "hand:", players[i].HandString(), "***")
+			}
 		}
 
 		_ = deck.Draw() //throw away a card to prevent perfect information
@@ -44,7 +54,10 @@ func main() {
 			cardDrawn = deck.Draw()
 			players[currentPlayer].Send("draw", cardDrawn)
 			players[currentPlayer].AddToHand(cardDrawn)
-			
+			if debug {
+				fmt.Println("*** Player", currentPlayer, "drew", cardDrawn, "***")
+				fmt.Println("*** Player", currentPlayer, "hand:", players[currentPlayer].HandString(), "***")
+			}
 
 			fullMove = players[currentPlayer].Recieve()
 			
@@ -53,31 +66,38 @@ func main() {
 			
 			if n < 2 {
 				//malformed move
-				fmt.Println("ERROR: Player", currentPlayer, "made an illegal play")
-				players[currentPlayer].Forfeit()
+				if debug {
+					fmt.Println("*** ERROR: Player", currentPlayer, "passed too few arguments ***")
+				}
+				Out(currentPlayer)
 				goto endTurn
 			}
 
 			if !strings.EqualFold(action, "play") {
 				//must be "forfeit" or some invalid action
-				fmt.Println("ERROR: Player", currentPlayer, "made an illegal play")
-				players[currentPlayer].Forfeit()
+				fmt.Println("*** ERROR: Player", currentPlayer, "made an illegal play or forfeited ***")
+				Out(currentPlayer)
 				goto endTurn
 			}
 
 			card = ParseCard(cardStr)
 			if players[currentPlayer].RemoveFromHand(card) {
 				//trying to play a card you don't have is illegal
-				fmt.Println("ERROR: Player", currentPlayer, "played a noexistent card")
-				players[currentPlayer].Forfeit()
+				if debug {
+					fmt.Println("*** ERROR: Player", currentPlayer, "played a card they dont have ***")
+				}
+				Out(currentPlayer)
 				goto endTurn
+			}
+			if debug {
+				fmt.Println("*** Player", currentPlayer, "played", card, "***")
+				fmt.Println("*** Player", currentPlayer, "hand:", players[currentPlayer].HandString(), "***")
 			}
 
 			switch card {
 			case Princess:
 				SendAll("played", currentPlayer, card)
-				players[currentPlayer].Forfeit()
-				SendAll("out", currentPlayer, players[currentPlayer].HandString())
+				Out(currentPlayer)
 			}
 
 		endTurn:
@@ -134,4 +154,12 @@ func PlayerWon() (bool, int) {
 		}
 	}
 	return false, 0
+}
+
+func Out(playerNumber int) {
+	players[playerNumber].Forfeit()
+	SendAll("out", playerNumber, players[playerNumber].HandString())
+	if debug {
+		fmt.Println("*** Player", playerNumber, "out:", players[playerNumber].HandString(), "***")
+	}
 }
