@@ -24,7 +24,7 @@ func main() {
 			players[i] = new(Player)
 	}
 
-	for won, _ := PlayerWon(); !won; {
+	for won, _ := PlayerWon(); !won; won, _ = PlayerWon() {
 		deck.Init()
 		for i, _ := range players {
 			players[i].Init(flag.Arg(i), i, len(players), startPlayer)
@@ -144,8 +144,8 @@ func SurvivingPlayers() int {
 }
 
 func PlayerWon() (bool, int) {
-	for i, _ := range players {
-		if players[i].roundsWon >= 4 {
+	for i, p := range players {
+		if p.roundsWon >= 4 {
 			return true, i
 		}
 	}
