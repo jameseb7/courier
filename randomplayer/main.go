@@ -40,8 +40,8 @@ func main() {
 	for {
 		str = Recieve()
 		var message string
-		var arg string
-		fmt.Sscan(str, &message, &arg)
+		var arg, arg2 string
+		fmt.Sscan(str, &message, &arg, &arg2)
 		
 		if strings.EqualFold(message, "player") {
 			if n, _ := strconv.ParseInt(arg, 10, 0); int(n) == myNumber {
@@ -81,11 +81,13 @@ func main() {
 			c := ParseCard(arg)
 			hand[0] = c
 		} else if strings.EqualFold(message, "discard") {
-			//remove the specified card from hand
-			c := ParseCard(arg)
-			for i, v := range hand {
-				if v == c {
-					hand = append(hand[:i], hand[i+1:]...)
+			if p, _ := strconv.ParseInt(arg, 10, 0); int(p) == myNumber {
+				//remove the specified card from hand
+				c := ParseCard(arg2)
+				for i, v := range hand {
+					if v == c {
+						hand = append(hand[:i], hand[i+1:]...)
+					}
 				}
 			}
 		} else if strings.EqualFold(message, "out") {

@@ -50,7 +50,8 @@ func main() {
 			}
 
 			SendAll("player", currentPlayer)
-			
+			players[currentPlayer].protected = false //protection expires on your turn
+
 			cardDrawn = deck.Draw()
 			players[currentPlayer].Send("draw", cardDrawn)
 			players[currentPlayer].AddToHand(cardDrawn)
@@ -105,11 +106,7 @@ func main() {
 					Out(currentPlayer)
 					goto endTurn
 				}
-				if (target >= len(players)) && (target < 0) {
-					Debug("*** ERROR: Player", currentPlayer, "passed a bad target argument ***")
-					Out(currentPlayer)
-					goto endTurn
-				}
+				
 			case Soldier:
 				if n != 4 {
 					Debug("*** ERROR: Player", currentPlayer, "passed the wrong number of arguments for the played card ***")
@@ -124,6 +121,26 @@ func main() {
 			}
 
 			SendAll("played", currentPlayer, card)
+
+			//check target is okay
+			switch card {
+			case General, Wizard, Knight, Clown, Soldier:
+				if (target >= len(players)) && (target < 0) {
+					Debug("*** ERROR: Player", currentPlayer, "passed a bad target argument ***")
+					Out(currentPlayer)
+					goto endTurn
+				}
+				if players[target].lost {
+					Debug("*** ERROR: Player", currentPlayer, "attempted to target a player who has already lost ***")
+					Out(currentPlayer)
+					goto endTurn
+				}
+				if players[target].protected {
+					Debug("*** Player", target, "was protected by a priestess")
+					goto endTurn
+				}
+			}
+			
 			switch card {
 			case Princess:
 				Out(currentPlayer)
@@ -137,7 +154,22 @@ func main() {
 				Debug("*** Player", currentPlayer, "hand:", players[currentPlayer].HandString(), "***")
 				Debug("*** Player", target, "hand:", players[target].HandString(), "***")
 			case Wizard:
+				Debug("*** Player", target, "discards hand and draws a new card ***")
+				SendAll("discard", target, players[target].hand[0])
+				if players[target].hand[0] == Princess {
+					Out(target)
+					goto endTurn
+				}
+				if deck.IsEmpty() {
+					Debug("*** Player", target, "can't draw as there are no cards left ***")
+					Out(target)
+					goto endTurn
+				}
+				players[target].hand[0] = deck.Draw()
+				players[target].Send("draw", players[target].hand[0])
+				Debug("*** Player", target, "hand:", players[target].HandString(), "***")
 			case Priestess:
+				players[currentPlayer].protected = true
 			case Knight:
 			case Clown:
 			case Soldier:
