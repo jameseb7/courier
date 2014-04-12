@@ -41,7 +41,7 @@ func main() {
 
 		var currentPlayer = startPlayer
 		for !deck.IsEmpty() && (SurvivingPlayers() > 1) {
-			var fullMove, action, cardStr, targetCardStr string
+			var fullMove, action, cardStr, queryStr string
 			var target, n  int
 			var card, cardDrawn Card
 
@@ -65,7 +65,7 @@ func main() {
 			fullMove = players[currentPlayer].Recieve()
 			Debug("*** Player", currentPlayer, "move:", fullMove, "***")
 			
-			n, _ = fmt.Sscan(fullMove, &action, &cardStr, &target, &targetCardStr)
+			n, _ = fmt.Sscan(fullMove, &action, &cardStr, &target, &queryStr)
 			
 			if !strings.EqualFold(action, "play") {
 				//must be "forfeit" or some invalid action
@@ -91,13 +91,41 @@ func main() {
 			Debug("*** Player", currentPlayer, "played", card, "***")
 			Debug("*** Player", currentPlayer, "hand:", players[currentPlayer].HandString(), "***")
 
+			//check the right number of arguments has been given
+			switch card {
+			case Princess, Minister, Priestess:
+				if n != 2 {
+					Debug("*** ERROR: Player", currentPlayer, "passed the wrong number of arguments for the played card ***")
+					Out(currentPlayer)
+					goto endTurn
+				}
+			case General, Wizard, Knight, Clown:
+				if n != 3 {
+					Debug("*** ERROR: Player", currentPlayer, "passed the wrong number of arguments for the played card ***")
+					Out(currentPlayer)
+					goto endTurn
+				}
+			case Soldier:
+				if n != 4 {
+					Debug("*** ERROR: Player", currentPlayer, "passed the wrong number of arguments for the played card ***")
+					Out(currentPlayer)
+					goto endTurn
+				}
+			}
+
+			SendAll("played", currentPlayer, card)
 			switch card {
 			case Princess:
-				SendAll("played", currentPlayer, card)
 				Out(currentPlayer)
 			case Minister:
-				SendAll("played", currentPlayer, card)
 				players[currentPlayer].ministered = true
+			case General:
+			case Wizard:
+			case Priestess:
+			case Knight:
+			case Clown:
+			case Soldier:
+			default:
 			}
 
 		endTurn:
