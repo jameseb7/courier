@@ -91,7 +91,7 @@ func main() {
 			Debug("*** Player", currentPlayer, "played", card, "***")
 			Debug("*** Player", currentPlayer, "hand:", players[currentPlayer].HandString(), "***")
 
-			//check the right number of arguments has been given
+			//check the right arguments have been given
 			switch card {
 			case Princess, Minister, Priestess:
 				if n != 2 {
@@ -105,9 +105,19 @@ func main() {
 					Out(currentPlayer)
 					goto endTurn
 				}
+				if (target >= len(players)) && (target < 0) {
+					Debug("*** ERROR: Player", currentPlayer, "passed a bad target argument ***")
+					Out(currentPlayer)
+					goto endTurn
+				}
 			case Soldier:
 				if n != 4 {
 					Debug("*** ERROR: Player", currentPlayer, "passed the wrong number of arguments for the played card ***")
+					Out(currentPlayer)
+					goto endTurn
+				}
+				if (target >= len(players)) && (target < 0) {
+					Debug("*** ERROR: Player", currentPlayer, "passed a bad target argument ***")
 					Out(currentPlayer)
 					goto endTurn
 				}
@@ -120,6 +130,12 @@ func main() {
 			case Minister:
 				players[currentPlayer].ministered = true
 			case General:
+				players[currentPlayer].Send("swap", players[target].hand[0])
+				players[target].Send("swap", players[currentPlayer].hand[0])
+				players[currentPlayer].hand[0], players[target].hand[0] = players[target].hand[0], players[currentPlayer].hand[0]
+				Debug("*** Player", currentPlayer, "and Player", target, "swapped hands ***")
+				Debug("*** Player", currentPlayer, "hand:", players[currentPlayer].HandString(), "***")
+				Debug("*** Player", target, "hand:", players[target].HandString(), "***")
 			case Wizard:
 			case Priestess:
 			case Knight:
