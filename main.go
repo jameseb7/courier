@@ -54,6 +54,10 @@ func main() {
 			cardDrawn = deck.Draw()
 			players[currentPlayer].Send("draw", cardDrawn)
 			players[currentPlayer].AddToHand(cardDrawn)
+			if players[currentPlayer].ministered && (players[currentPlayer].HandValue() >= 12) {
+				Out(currentPlayer)
+				goto endTurn
+			}
 			
 			Debug("*** Player", currentPlayer, "drew", cardDrawn, "***")
 			Debug("*** Player", currentPlayer, "hand:", players[currentPlayer].HandString(), "***")
@@ -91,6 +95,9 @@ func main() {
 			case Princess:
 				SendAll("played", currentPlayer, card)
 				Out(currentPlayer)
+			case Minister:
+				SendAll("played", currentPlayer, card)
+				players[currentPlayer].ministered = true
 			}
 
 		endTurn:
