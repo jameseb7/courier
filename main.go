@@ -8,11 +8,13 @@ import "flag"
 
 var players []*Player
 var debug bool
+var singleRound bool
 
 func main() {
 	rand.Seed(time.Now().Unix())
 	
 	flag.BoolVar(&debug, "v", false, "Provide more verbose output for debugging purposes")
+	flag.BoolVar(&singleRound, "s", false, "Stop after running only a single round of the game")
 	flag.Parse()
 
 	players = make([]*Player, flag.NArg())
@@ -119,6 +121,11 @@ func main() {
 			fmt.Print("Player ", i, " score: ", p.roundsWon, "\t")
 		}
 		fmt.Println()
+		
+		if singleRound {
+			//only running one round so stop now
+			return
+		}
 	}
 	_, winner := PlayerWon()
 	fmt.Println("Player won:", winner, players[winner].name)
