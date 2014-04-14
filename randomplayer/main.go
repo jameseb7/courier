@@ -36,13 +36,13 @@ func main() {
 	var card string
 	fmt.Sscanf(str, "draw %v", &card)
 	hand = append(hand, ParseCard(card))
-	
+
 	for {
 		str = Recieve()
 		var message string
 		var arg, arg2 string
 		fmt.Sscan(str, &message, &arg, &arg2)
-		
+
 		if strings.EqualFold(message, "player") {
 			if n, _ := strconv.ParseInt(arg, 10, 0); int(n) == myNumber {
 				//my turn!
@@ -50,7 +50,7 @@ func main() {
 				str = Recieve()
 				fmt.Sscanf(str, "draw %v", &arg)
 				hand = append(hand, ParseCard(arg))
-				
+
 				//pick a random card and play it
 				i := rand.Intn(len(hand))
 				c := hand[i]
@@ -66,7 +66,7 @@ func main() {
 				case Soldier:
 					//card requiring a target and a query
 					i = rand.Intn(len(players))
-					q := Card(rand.Intn(8)+1)
+					q := Card(rand.Intn(8) + 1)
 					fmt.Println("play", c, players[i], q)
 				default:
 					//something must have gone wrong
@@ -77,7 +77,7 @@ func main() {
 			//add the specified card to hand
 			hand = append(hand, ParseCard(arg))
 		} else if strings.EqualFold(message, "swap") {
-			//swap the first card in hand for the specified card 
+			//swap the first card in hand for the specified card
 			c := ParseCard(arg)
 			hand[0] = c
 		} else if strings.EqualFold(message, "discard") {
@@ -114,6 +114,6 @@ func Recieve() string {
 			panic(err)
 		}
 	}
-	
+
 	return string(str)
 }

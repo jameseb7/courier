@@ -2,7 +2,7 @@ package main
 
 import "math/rand"
 
-type Deck struct{
+type Deck struct {
 	cards []Card
 }
 
@@ -18,7 +18,7 @@ func (d *Deck) Init() {
 		Minister,
 		Princess,
 	}
-	
+
 	//shuffle the cards
 	perm := rand.Perm(len(d.cards))
 	var newcards = make([]Card, 0, len(d.cards))
@@ -31,7 +31,7 @@ func (d *Deck) Init() {
 func (d *Deck) Draw() Card {
 	n := len(d.cards) - 1
 	drawnCard := d.cards[n]
-	
+
 	d.cards = d.cards[0:n]
 	return drawnCard
 }

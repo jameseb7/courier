@@ -18,23 +18,23 @@ const (
 
 func (c Card) String() string {
 	switch c {
-	case Soldier: 
+	case Soldier:
 		return "soldier"
-	case Clown: 
+	case Clown:
 		return "clown"
-	case Knight: 
+	case Knight:
 		return "knight"
-	case Priestess: 
+	case Priestess:
 		return "priestess"
-	case Wizard: 
+	case Wizard:
 		return "wizard"
-	case General: 
+	case General:
 		return "general"
-	case Minister: 
+	case Minister:
 		return "minister"
-	case Princess: 
+	case Princess:
 		return "princess"
-	default: 
+	default:
 		return "<NONE>"
 	}
 }
@@ -72,7 +72,7 @@ func ParseCard(str string) Card {
 		if strings.EqualFold(str, "minister") {
 			return Minister
 		}
-	default: 
+	default:
 		return None
 	}
 	return None

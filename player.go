@@ -5,19 +5,19 @@ import "os/exec"
 import "io"
 import "fmt"
 
-type Player struct{
-	name string
+type Player struct {
+	name   string
 	number int
 
 	hand []Card
 
-	ai *exec.Cmd
-	toPipe io.WriteCloser
+	ai       *exec.Cmd
+	toPipe   io.WriteCloser
 	fromPipe io.ReadCloser
 
 	ministered bool
-	protected bool
-	lost bool
+	protected  bool
+	lost       bool
 
 	roundsWon int
 }
@@ -27,13 +27,13 @@ func (p *Player) Init(aiName string, playerNumber, nPlayers, startPlayer int) {
 	if p != nil {
 		p.Forfeit()
 	}
-	
+
 	//clear old player data
 	p.ministered = false
 	p.protected = false
 	p.lost = false
 	p.hand = make([]Card, 0, 2)
-	
+
 	//set up the AI
 	if aiName == "-" {
 		//the player is human
@@ -41,24 +41,24 @@ func (p *Player) Init(aiName string, playerNumber, nPlayers, startPlayer int) {
 		p.fromPipe = os.Stdin
 	} else {
 		p.ai = exec.Command(aiName)
-		
+
 		if pipe, err := p.ai.StdinPipe(); err != nil {
 			panic(err)
 		} else {
 			p.toPipe = pipe
 		}
-		
+
 		if pipe, err := p.ai.StdoutPipe(); err != nil {
 			panic(err)
 		} else {
 			p.fromPipe = pipe
 		}
-		
+
 		if err := p.ai.Start(); err != nil {
 			panic(err)
 		}
 	}
-	
+
 	p.number = playerNumber
 	p.Send("ident", p.number)
 	p.name = p.Recieve()
@@ -93,7 +93,7 @@ func (p *Player) Recieve() string {
 	if p.lost {
 		panic("Nonexistent AI")
 	}
-	
+
 	buf := make([]byte, 1)
 	str := make([]byte, 0, 20)
 	n, err := p.fromPipe.Read(buf)
@@ -104,7 +104,7 @@ func (p *Player) Recieve() string {
 			panic(err)
 		}
 	}
-	
+
 	return string(str)
 }
 
