@@ -171,7 +171,19 @@ func main() {
 			case Priestess:
 				players[currentPlayer].protected = true
 			case Knight:
+				Debug("*** Player", currentPlayer, "and Player", target,"compare hands ***")
+				Debug("*** Player", currentPlayer, "hand:", players[currentPlayer].HandString(), "***")
+				Debug("*** Player", target, "hand:", players[target].HandString(), "***")
+				players[target].Send("reveal", currentPlayer, players[currentPlayer].hand[0])
+				players[currentPlayer].Send("reveal", target, players[target].hand[0])
+				if players[currentPlayer].HandValue() > players[target].HandValue() {
+					Out(target)
+				} else if players[currentPlayer].HandValue() < players[target].HandValue() {
+					Out(currentPlayer)
+				}
 			case Clown:
+				Debug("*** Player", target, "reveals a", players[target].hand[0], "from their hand to Player", currentPlayer,"***")
+				players[currentPlayer].Send("reveal", target, players[target].hand[0])
 			case Soldier:
 			default:
 			}
