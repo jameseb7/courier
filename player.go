@@ -122,6 +122,15 @@ func (p *Player) RemoveFromHand(c Card) (ok bool) {
 	return false
 }
 
+func (p *Player) HasInHand(c Card) bool {
+	for _, v := range p.hand {
+		if v == c {
+			return true
+		}
+	}
+	return false
+}
+
 func (p *Player) HandString() string {
 	str := make([]byte, 0, 20)
 	for i, v := range p.hand {

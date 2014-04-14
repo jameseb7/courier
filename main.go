@@ -185,7 +185,13 @@ func main() {
 				Debug("*** Player", target, "reveals a", players[target].hand[0], "from their hand to Player", currentPlayer,"***")
 				players[currentPlayer].Send("reveal", target, players[target].hand[0])
 			case Soldier:
+				Debug("*** Player", currentPlayer, "asked Player", target, "if they have a", queryStr, "in their hand ***")
+				if players[target].HasInHand(ParseCard(queryStr)) {
+					Out(target)
+				}
 			default:
+				Debug("*** ERROR: Player", currentPlayer, "played an illegal card:", cardStr, "***")
+				Out(currentPlayer)
 			}
 
 		endTurn:
