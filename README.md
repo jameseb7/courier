@@ -1,7 +1,7 @@
 Courier
 =======
 
-A game manager for the Love Letter AI competition planned by [https://github.com/HackSoc](HackSoc) at York, written in Go. Based on the specification at https://github.com/HackSoc/LoveLetterManager with some modifications introduced by [https://github.com/46bit](46bit) in [https://github.com/46bit/postman](his implementation).
+A game manager for the Love Letter AI competition planned by [HackSoc](https://github.com/HackSoc) at York, written in Go. Based on the specification at https://github.com/HackSoc/LoveLetterManager with some modifications introduced by [46bit](https://github.com/46bit) in [his implementation](https://github.com/46bit/postman).
 
 Courier runs the AIs passed to it and communicates with them via stdout and stdin. AIs should read messages coming in from stdin and write messages to stdout as described in https://github.com/HackSoc/LoveLetterManager/blob/master/README.md, newlines should be sent at the end of each message as Courier requires them.
 
