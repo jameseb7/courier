@@ -10,7 +10,7 @@ import "flag"
 
 var players []*Player
 var debug bool
-var singleRound bool
+var roundsNeeded int
 
 func main() {
 	seed, err := crand.Int(crand.Reader, big.NewInt(math.MaxInt64))
@@ -20,8 +20,12 @@ func main() {
 	rand.Seed(seed.Int64())
 
 	flag.BoolVar(&debug, "v", false, "Provide more verbose output for debugging purposes")
-	flag.BoolVar(&singleRound, "s", false, "Stop after running only a single round of the game")
+	flag.IntVar(&roundsNeeded, "r", 4, "The number of rounds that must be won to win the game")
+	single := flag.Bool("s", false, "Ignore -r and stop after running only a single round of the game.")
 	flag.Parse()
+	if *single {
+		roundsNeeded = 1
+	}
 
 	players = make([]*Player, flag.NArg())
 	var startPlayer = 0
@@ -244,11 +248,6 @@ func main() {
 			fmt.Print("Player ", i, " score: ", p.roundsWon, "\t")
 		}
 		fmt.Println()
-
-		if singleRound {
-			//only running one round so stop now
-			return
-		}
 	}
 	_, winner := PlayerWon()
 	fmt.Println("Player won:", winner, players[winner].name)
@@ -274,7 +273,7 @@ func SurvivingPlayers() int {
 
 func PlayerWon() (bool, int) {
 	for i, p := range players {
-		if p.roundsWon >= 4 {
+		if p.roundsWon >= roundsNeeded {
 			return true, i
 		}
 	}

@@ -41,12 +41,14 @@ go install github.com/jameseb7/courier/randomplayer
 Courier can be run by using a command of the form:
 
 ```
-./courier [-s] [-v] <AI PATHS>
+./courier [-r <ROUNDS>] [-s] [-v] <AI PATHS>
 ```
 
 `<AI PATHS>` are the paths to the AIs that will be run, separated by spaces with one for each player in the game. If `-` is used as one of the AI paths then that player will be controlled by a human player with messages being sent to Courier's stdout and recieved from Courier's stdin in the same format as for AI messages.
 
-`-s`, if present, causes Courier to only run a single round of the game rather than running until at least one player has won 4 rounds
+`-r <ROUNDS>`, where `<ROUNDS>` is an integer value, sets the number of rounds that must be won to win the game, which defaults to 4
+
+`-s`, if present, causes Courier to only run a single round of the game rather, ignoring the `-r` option
 
 `-v`, if present, causes Courier to produce detailed output for debugging and observation purposes
 
