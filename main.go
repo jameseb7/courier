@@ -1,7 +1,9 @@
 package main
 
+import "math"
 import "math/rand"
-import "time"
+import "math/big"
+import crand "crypto/rand"
 import "fmt"
 import "strings"
 import "flag"
@@ -11,7 +13,11 @@ var debug bool
 var singleRound bool
 
 func main() {
-	rand.Seed(time.Now().Unix())
+	seed, err := crand.Int(crand.Reader, big.NewInt(math.MaxInt64))
+	if err != nil {
+		panic(err)
+	}
+	rand.Seed(seed.Int64())
 
 	flag.BoolVar(&debug, "v", false, "Provide more verbose output for debugging purposes")
 	flag.BoolVar(&singleRound, "s", false, "Stop after running only a single round of the game")
