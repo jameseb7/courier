@@ -142,8 +142,24 @@ func main() {
 					goto endTurn
 				}
 				if players[target].protected {
-					Debug("*** Player", target, "was protected by a priestess")
+					Debug("*** Player", currentPlayer, "tried to target Player", target, "who was protected by a priestess ***")
+					Out(currentPlayer)
 					goto endTurn
+				}
+				if target == currentPlayer {
+					Debug("*** Player", currentPlayer, "tried to target themself ***")
+					var availableTargets = 0
+					for _, v := range players {
+						if !(v.protected || v.lost) {
+							availableTargets++
+						}
+					}
+					if availableTargets <= 1 {
+						Debug("*** Player", currentPlayer, "is permitted to target themself as there are no other valid targets left ***")
+					} else {
+						Out(currentPlayer)
+						goto endTurn
+					}
 				}
 			}
 
