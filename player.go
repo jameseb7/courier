@@ -15,7 +15,6 @@ type Player struct {
 	toPipe   io.WriteCloser
 	fromPipe io.ReadCloser
 
-	ministered bool
 	protected  bool
 	lost       bool
 

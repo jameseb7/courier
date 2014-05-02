@@ -65,8 +65,12 @@ func main() {
 			cardDrawn = deck.Draw()
 			players[currentPlayer].Send("draw", cardDrawn)
 			players[currentPlayer].AddToHand(cardDrawn)
-			if players[currentPlayer].ministered && (players[currentPlayer].HandValue() >= 12) {
-				Out(currentPlayer)
+			if players[currentPlayer].hasInHand(Minister) && 
+				(players[currentPlayer].hasInHand(Wizard) || players[currentPlayer].hasInHand(General)) {
+				Debug("*** Player", currentPlayer, "drew", cardDrawn, "***")
+				Debug("*** Player", currentPlayer, "was forced to discard the minister ***")
+				_ = players[currentPlayer].RemoveFromHand(Minister);
+				SendAll("played", currentPlayer, Minister)
 				goto endTurn
 			}
 
@@ -171,7 +175,6 @@ func main() {
 			case Princess:
 				Out(currentPlayer)
 			case Minister:
-				players[currentPlayer].ministered = true
 			case General:
 				players[currentPlayer].Send("swap", players[target].hand[0])
 				players[target].Send("swap", players[currentPlayer].hand[0])
