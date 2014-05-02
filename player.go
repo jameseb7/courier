@@ -15,8 +15,8 @@ type Player struct {
 	toPipe   io.WriteCloser
 	fromPipe io.ReadCloser
 
-	protected  bool
-	lost       bool
+	protected bool
+	lost      bool
 
 	roundsWon int
 }
@@ -28,7 +28,6 @@ func (p *Player) Init(aiName string, playerNumber, nPlayers, startPlayer int) {
 	}
 
 	//clear old player data
-	p.ministered = false
 	p.protected = false
 	p.lost = false
 	p.hand = make([]Card, 0, 2)

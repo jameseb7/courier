@@ -65,11 +65,11 @@ func main() {
 			cardDrawn = deck.Draw()
 			players[currentPlayer].Send("draw", cardDrawn)
 			players[currentPlayer].AddToHand(cardDrawn)
-			if players[currentPlayer].hasInHand(Minister) && 
-				(players[currentPlayer].hasInHand(Wizard) || players[currentPlayer].hasInHand(General)) {
+			if players[currentPlayer].HasInHand(Minister) &&
+				(players[currentPlayer].HasInHand(Wizard) || players[currentPlayer].HasInHand(General)) {
 				Debug("*** Player", currentPlayer, "drew", cardDrawn, "***")
 				Debug("*** Player", currentPlayer, "was forced to discard the minister ***")
-				_ = players[currentPlayer].RemoveFromHand(Minister);
+				_ = players[currentPlayer].RemoveFromHand(Minister)
 				SendAll("played", currentPlayer, Minister)
 				goto endTurn
 			}
