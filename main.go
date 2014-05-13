@@ -215,7 +215,13 @@ func main() {
 				players[currentPlayer].Send("reveal", target, players[target].hand[0])
 			case Soldier:
 				Debug("*** Player", currentPlayer, "asked Player", target, "if they have a", queryStr, "in their hand ***")
-				if players[target].HasInHand(ParseCard(queryStr)) {
+				queryCard := ParseCard(queryStr)
+				if queryCard == Soldier {
+					Debug("*** ERROR: Can't target a soldier with a soldier ***")
+					Out(currentPlayer)
+					goto endTurn
+				}
+				if players[target].HasInHand(queryCard) {
 					Out(target)
 				}
 			default:
