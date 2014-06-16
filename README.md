@@ -56,4 +56,7 @@ An example of usage, showing random players playing a single round is:
 
 ```
 ./courier -v -s ./randomplayer ./randomplayer ./randomplayer ./randomplayer
+
 ```
+
+Courier returns -1 if an error occurs and the index of the winning AI (starting from 0 and indexing in the order the AIs are passed to Courier).

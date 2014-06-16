@@ -7,12 +7,15 @@ import crand "crypto/rand"
 import "fmt"
 import "strings"
 import "flag"
+import "os"
 
 var players []*Player
 var debug bool
 var roundsNeeded int
 
 func main() {
+	defer HandlePanic()
+
 	seed, err := crand.Int(crand.Reader, big.NewInt(math.MaxInt64))
 	if err != nil {
 		panic(err)
@@ -260,6 +263,7 @@ func main() {
 	}
 	_, winner := PlayerWon()
 	fmt.Println("Player won:", winner, players[winner].name)
+	os.Exit(winner)
 }
 
 func SendAll(args ...interface{}) {
@@ -298,5 +302,13 @@ func Out(playerNumber int) {
 func Debug(args ...interface{}) {
 	if debug {
 		fmt.Println(args...)
+	}
+}
+
+func HandlePanic() {
+	err := recover()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(-1)
 	}
 }
